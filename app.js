@@ -2,9 +2,6 @@ const express = require('express');
 const app = express();
 const mongoose = require("mongoose");
 
-const postRoutes = require("./api/routes/posts");
-const userRoutes = require('./api/routes/users');
-
 const password = encodeURIComponent(process.env.MONGO_ATLAS_PW)
 
 mongoose.connect(
@@ -29,8 +26,8 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use("/posts", postRoutes);
-app.use("/user", userRoutes);
+app.use("/posts", require("./api/routes/posts"));
+app.use("/user", require('./api/routes/users'));
 
 app.use((req, res, next) => {
   const error = new Error("Not found");
