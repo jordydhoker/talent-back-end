@@ -5,7 +5,7 @@ const mongoose = require("mongoose");
 const password = encodeURIComponent(process.env.MONGO_ATLAS_PW)
 
 mongoose.connect(
-  'mongodb+srv://Jordy:' + password + '@restexample-1rnt1.mongodb.net/test?retryWrites=true',
+  'mongodb+srv://Jordy:jazeker@restexample-1rnt1.mongodb.net/test?retryWrites=true',
   { useNewUrlParser: true }
 );
 mongoose.Promise = global.Promise;
