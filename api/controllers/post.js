@@ -4,7 +4,7 @@ const checkAuth = require("../middleware/check-auth");
 
 exports.posts_get_all = async (req, res, next) => {
   try {
-    res.status(200).json(await Post.find().select("-__v"));
+    res.status(200).json(await Post.find().select("-__v").populate('user'));
   } catch (error) {
     console.log(error);
     res.status(500).json(error);
