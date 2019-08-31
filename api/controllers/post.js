@@ -1,53 +1,65 @@
 const mongoose = require("mongoose");
 const Post = require("../models/post");
-const checkAuth = require("../middleware/check-auth");
+
 
 exports.posts_get_all = async (req, res, next) => {
   try {
-    res.status(200).json(await Post.find().select("-__v").populate('user'));
+    res.status(200).json(
+      await Post.find()
+        .select("-__v")
+        .populate("user")
+    );
   } catch (error) {
     console.log(error);
     res.status(500).json(error);
   }
 };
 
-exports.posts_create_post = (req, res, next) => {
-  if (req.userData.userId == req.params.userId) {
+exports.posts_get_by_user = async (req, res, next) => {
+  try {
+    res.status(200).json(
+      await Post.find({user: req.params.userId})
+        .select("-__v")
+        .populate("user")
+    );
+  } catch (error) {
+    console.log(error);
+    res.status(500).json(error);
   }
-  const post = new Post({
-    _id: new mongoose.Types.ObjectId(),
-    user: req.body.userId,
-    text: req.body.text
-  });
-  post
-    .save()
-    .then(result => {
-      console.log(result);
-      res.status(201).json({
-        message: "Created post successfully",
-        createdPost: {
-          _id: result._id,
-          user: result.userId,
-          text: result.text,
+};
 
-          request: {
-            type: "GET",
-            url: "http://localhost:3000/posts/" + result._id
-          }
-        }
-      });
-    })
-    .catch(err => {
-      console.log(err);
-      res.status(500).json({
-        error: err
-      });
+exports.posts_create_post = async (req, res, next) => {
+  try {
+    const data = await Post.create({
+      user: req.userData.userId,
+      text: req.body.text
     });
+    if (data) {
+      res.status(200).json(
+        await Post.findById(data._id)
+          .select("-__v")
+          .populate({
+            path: "user",
+            select: "-__v -password"
+          })
+      );
+    } else {
+      throw new Error("Invalid data given");
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json(error);
+  }
 };
 
 exports.posts_get_post = async (req, res, next) => {
   try {
-    const post = await Post.findById(req.params.postId).select("-__v");
+    const post = await Post.findById(req.params.postId)
+      .select("-__v")
+      .populate({
+        path: "user",
+        select: "-__v -password"
+      });
     if (post) {
       res.status(200).json(post);
     } else {
@@ -86,7 +98,7 @@ exports.posts_get_post = async (req, res, next) => {
 
 exports.posts_delete_post = async (req, res, next) => {
   try {
-    const result = await Model.deleteOne({ _id: req.params.postId });
+    const result = await Post.deleteOne({ _id: req.params.postId });
     if (result.deletedCount >= 1) {
       res.status(200).json("Deleted");
     } else {

@@ -4,12 +4,13 @@ const checkAuth = require('../middleware/check-auth');
 
 const PostController = require('../controllers/post');
 
-// Handle incoming GET requests to /posts
 router.get("/", PostController.posts_get_all);
 
 router.post("/", checkAuth.check_login, PostController.posts_create_post);
 
-router.get("/:postId", checkAuth.check_login, PostController.posts_get_post);
+router.get("/:postId", PostController.posts_get_post);
+
+router.get("/user/:userId", PostController.posts_get_by_user);
 
 // router.patch("/:postId", checkAuth.check_login, PostController.products_update_product);
 
