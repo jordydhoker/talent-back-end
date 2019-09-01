@@ -7,7 +7,7 @@ const checkAuth = require('../middleware/check-auth');
 
 router.get("/", UserController.users_get_all);
 
-router.get("/current", UserController.users_get_current);
+router.get("/current", checkAuth.check_login, UserController.users_get_current);
 
 router.get("/:userId", UserController.users_get_user);
 
